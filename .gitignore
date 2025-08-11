@@ -1,0 +1,57 @@
+.env
+.vscode/
+.idea/
+out/
+
+typechain-types
+
+# OS file
+.DS_Store
+
+# Dependency directories
+node_modules
+jspm_packages
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+bin
+build
+artifacts
+cache
+dist
+
+# Coverage directory used by tools like istanbul
+.coverageArtifacts
+coverage
+coverage.json
+__pycache__/
+
+draft/
+
+.npmrc
+
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+broadcast
+
+private/
+draft/
+slither.db.json

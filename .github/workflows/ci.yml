@@ -1,0 +1,38 @@
+name: CI
+on: [push, workflow_call]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: [lint, prettier, compile]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Yarn install
+        run: yarn install --immutable
+
+      - name: Run Prettier check
+        if: matrix.task == 'prettier'
+        run: |
+          yarn prettier -v
+          yarn check-format
+
+      - name: Run linting
+        if: matrix.task == 'lint'
+        run: yarn lint
+
+      - name: Compile
+        if: matrix.task == 'compile'
+        run: yarn hardhat compile

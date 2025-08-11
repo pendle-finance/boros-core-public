@@ -1,0 +1,60 @@
+{
+    "name": "@pendle/boros-core",
+    "version": "1.0.0",
+    "description": "Smart contracts of Pendle Boros",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepack": "yarn compile",
+        "format": "yarn prettier -w .",
+        "check-format": "yarn prettier -c .",
+        "gen-slots": "yarn ts-node ./scripts/GenSlots.ts",
+        "compile": "yarn hardhat compile",
+        "size": "yarn hardhat size-contracts",
+        "lint": "yarn solhint contracts/**/*.sol",
+        "gen-router-static-diamond:no-compile": "yarn hardhat run ./scripts/GenStaticDiamond.ts",
+        "gen-router-static-diamond": "yarn compile && yarn gen-router-static-diamond:no-compile"
+    },
+    "files": [
+        "contracts/",
+        "artifacts/contracts/",
+        "deployments/"
+    ],
+    "engines": {
+        "node": ">=10"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pendle-finance/boros-core-public.git"
+    },
+    "keywords": [
+        "pendle",
+        "core",
+        "v3"
+    ],
+    "license": "BUSL-1.1",
+    "bugs": {
+        "url": "https://github.com/pendle-finance/boros-core-public/issues"
+    },
+    "homepage": "https://github.com/pendle-finance/boros-core-public#readme",
+    "packageManager": "yarn@4.9.2",
+    "dependencies": {
+        "@openzeppelin/contracts": "5.3.0",
+        "@openzeppelin/contracts-upgradeable": "5.3.0"
+    },
+    "devDependencies": {
+        "@nomicfoundation/hardhat-viem": "^2.1.0",
+        "@types/node": "^24.2.1",
+        "decimal.js": "^10.6.0",
+        "hardhat": "^2.26.0",
+        "hardhat-contract-sizer": "^2.10.0",
+        "prettier": "^3.6.2",
+        "prettier-plugin-solidity": "^2.1.0",
+        "solhint": "^6.0.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3",
+        "viem": "^2.32.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "detectors_to_run": "all",
+    "detectors_to_exclude": "solc-version,pragma,assembly-usage,block-timestamp,unused-return,incorrect-equality,arbitrary-send-erc20,reentrancy-no-eth,uninitialized-local,tx-origin,missing-zero-check,calls-loop,reentrancy-benign,reentrancy-events,low-level-calls,naming-convention",
+    "exclude_dependencies": true,
+    "exclude_optimization": false,
+    "filter_paths": "(node_modules/)",
+    "include_paths": "contracts",
+    "skip_assembly": false,
+    "exclude_low": false,
+    "exclude_informational": false
+}

@@ -1,0 +1,23 @@
+{
+    "plugins": ["prettier-plugin-solidity"],
+    "singleQuote": false,
+    "bracketSpacing": false,
+    "tabWidth": 4,
+    "useTabs": false,
+    "overrides": [
+        {
+            "files": "*.sol",
+            "options": {
+                "parser": "slang",
+                "printWidth": 120,
+                "compiler": "0.8.28"
+            }
+        },
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}
