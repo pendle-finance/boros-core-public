@@ -1,0 +1,11 @@
+{
+    "address": "0x30c3cf7Bfe1C694382C4901aAE5C9D679EC8450D",
+    "name": "Binance ETHUSDT 26 Sep 2025",
+    "symbol": "BINANCE-ETHUSDT-26SEP2025",
+    "isIsolatedOnly": false,
+    "tokenId": 2,
+    "marketId": 3,
+    "maturity": 1758844800,
+    "tickStep": 2,
+    "iTickThresh": 583
+}

@@ -1,0 +1,11 @@
+{
+    "address": "0xd490dD635051D609887883d364368B223631653D",
+    "name": "Binance BTCUSDT 26 Sep 2025",
+    "symbol": "BINANCE-BTCUSDT-26SEP2025",
+    "isIsolatedOnly": false,
+    "tokenId": 1,
+    "marketId": 2,
+    "maturity": 1758844800,
+    "tickStep": 2,
+    "iTickThresh": 583
+}

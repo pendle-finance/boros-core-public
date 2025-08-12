@@ -1,0 +1,10 @@
+{
+    "address": "0xB57c34FbCB272510303675397055942B019eE45A",
+    "name": "Boros AMM - Binance BTCUSDT 26 Sep 2025",
+    "symbol": "AMM-BINANCE-BTCUSDT-26SEP2025",
+    "ammId": 20,
+    "tokenId": 1,
+    "marketId": 2,
+    "maturity": 1758844800,
+    "isPositive": true
+}
