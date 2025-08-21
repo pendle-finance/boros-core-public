@@ -6,7 +6,7 @@ import {IAdminModule} from "./../interfaces/IAdminModule.sol";
 import {IAMM} from "./../interfaces/IAMM.sol";
 import {IAMMFactory, AMMCreateParams, AMMSeedParams} from "./../interfaces/IAMMFactory.sol";
 import {IMarket} from "./../interfaces/IMarket.sol";
-import {IMarketHub} from "./../interfaces/IMarketHub.sol";
+import {IMarketHub, IMarketHubAllEventsAndTypes} from "./../interfaces/IMarketHub.sol";
 import {PMath} from "./../lib/math/PMath.sol";
 import {MarketAcc} from "./../types/Account.sol";
 import {LongShort, MarketId, OTCTrade, CancelData} from "./../types/MarketTypes.sol";
@@ -38,9 +38,12 @@ contract AdminModule is IAdminModule, PendleRolesPlugin {
         amm = IAMMFactory(AMM_FACTORY).create(isPositive, createParams, seedParams);
         MarketAcc ammAccount = IAMM(amm).SELF_ACC();
 
-        uint256 marketEntranceFee = _MARKET_HUB.getCashFeeData(ammAccount.tokenId()).marketEntranceFee;
-        _MARKET_HUB.cashTransfer(createParams.seeder, ammAccount, marketEntranceFee.Int());
+        IMarketHubAllEventsAndTypes.CashFeeData memory cashFeeData = _MARKET_HUB.getCashFeeData(ammAccount.tokenId());
+        uint256 marketEntranceFee = cashFeeData.marketEntranceFee;
+        uint256 minCash = ammAccount.isCross() ? cashFeeData.minCashCross : cashFeeData.minCashIsolated;
+        _MARKET_HUB.cashTransfer(createParams.seeder, ammAccount, (marketEntranceFee + minCash).Int());
         _MARKET_HUB.enterMarket(ammAccount, marketId);
+        _MARKET_HUB.cashTransfer(ammAccount, createParams.seeder, minCash.Int());
 
         LongShort memory emptyOrders;
         CancelData memory emptyCancels;
