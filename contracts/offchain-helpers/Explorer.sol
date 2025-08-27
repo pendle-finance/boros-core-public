@@ -97,12 +97,18 @@ contract Explorer is IExplorer, PendleRolesPlugin {
             if (signedSize == 0) continue;
 
             IMarketOff market = IMarketOff(marketIdToAddress(marketIds[i]));
-            position.liquidationApr = calcLiquidationRate(
-                market,
-                user,
-                signedSize,
-                (totalValue - position.positionValue) - (totalMaintMargin - position.maintMargin).Int()
-            );
+            try
+                Explorer(address(this)).calcLiquidationRate(
+                    market,
+                    user,
+                    signedSize,
+                    (totalValue - position.positionValue) - (totalMaintMargin - position.maintMargin).Int()
+                )
+            returns (int256 liquidationApr) {
+                position.liquidationApr = liquidationApr;
+            } catch {
+                position.liquidationApr = 0;
+            }
         }
     }
 
@@ -227,7 +233,7 @@ contract Explorer is IExplorer, PendleRolesPlugin {
         MarketAcc user,
         int256 size,
         int256 availValueExclude
-    ) internal view returns (int256 liqRate) {
+    ) external view returns (int256 liqRate) {
         if (size.abs() < 1000) {
             return 0;
         }
@@ -264,9 +270,11 @@ contract Explorer is IExplorer, PendleRolesPlugin {
         {
             // availValueExclude + size * markRate * timeToMat =  MM
             int256 MM = (absSize.mulDown(iThresh).mulDown(kMM) * marginDuration) / 365 days;
-            int256 markRate = (MM - availValueExclude).divDown(sizeTimeToMat);
-            if (markRate.abs().Int() <= iThresh) {
-                return markRate;
+            if (sizeTimeToMat != 0) {
+                int256 markRate = (MM - availValueExclude).divDown(sizeTimeToMat);
+                if (markRate.abs().Int() <= iThresh) {
+                    return markRate;
+                }
             }
         }
 
@@ -277,11 +285,13 @@ contract Explorer is IExplorer, PendleRolesPlugin {
         {
             // availValueExclude + size * markRate * timeToMat = mm * markRate
             int256 mm = (absSize.mulDown(kMM) * marginDuration) / 365 days;
-            int256 markRate = -availValueExclude.divDown(sizeTimeToMat - mm);
+            if (sizeTimeToMat - mm != 0) {
+                int256 markRate = -availValueExclude.divDown(sizeTimeToMat - mm);
 
-            bool switchedMM = timeToMat < scaledTThresh && size * markRate > 0;
-            if (markRate > iThresh && !switchedMM) {
-                return markRate;
+                bool switchedMM = timeToMat < scaledTThresh && size * markRate > 0;
+                if (markRate > iThresh && !switchedMM) {
+                    return markRate;
+                }
             }
         }
 
@@ -292,11 +302,13 @@ contract Explorer is IExplorer, PendleRolesPlugin {
         {
             // availValueExclude + size * markRate * timeToMat = -mm * markRate
             int256 mm = (absSize.mulDown(kMM) * marginDuration) / 365 days;
-            int256 markRate = -availValueExclude.divDown(sizeTimeToMat + mm);
+            if (sizeTimeToMat + mm != 0) {
+                int256 markRate = -availValueExclude.divDown(sizeTimeToMat + mm);
 
-            bool switchedMM = timeToMat < scaledTThresh && size * markRate > 0;
-            if (markRate < -iThresh && !switchedMM) {
-                return markRate;
+                bool switchedMM = timeToMat < scaledTThresh && size * markRate > 0;
+                if (markRate < -iThresh && !switchedMM) {
+                    return markRate;
+                }
             }
         }
     }
