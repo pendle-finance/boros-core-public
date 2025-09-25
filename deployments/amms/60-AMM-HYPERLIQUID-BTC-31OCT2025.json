@@ -1,0 +1,10 @@
+{
+    "address": "0xB53b0E16905ae10aAFc7918e738e44f22Ce5d2d0",
+    "name": "Boros AMM - Hyperliquid BTC 31 Oct 2025",
+    "symbol": "AMM-HYPERLIQUID-BTC-31OCT2025",
+    "ammId": 60,
+    "tokenId": 1,
+    "marketId": 6,
+    "maturity": 1761868800,
+    "isPositive": true
+}

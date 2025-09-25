@@ -1,0 +1,11 @@
+{
+    "address": "0x725fa7500F1b6e08972f04f7FC1931eA7C47314F",
+    "name": "Binance BTCUSDT 31 Oct 2025",
+    "symbol": "BINANCE-BTCUSDT-31OCT2025",
+    "isIsolatedOnly": false,
+    "tokenId": 1,
+    "marketId": 8,
+    "maturity": 1761868800,
+    "tickStep": 2,
+    "iTickThresh": 583
+}

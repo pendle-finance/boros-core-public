@@ -1,0 +1,11 @@
+{
+    "address": "0xc7c820668e16c5fA8AF3122d118611c186ED85B5",
+    "name": "Hyperliquid ETH 31 Oct 2025",
+    "symbol": "HYPERLIQUID-ETH-31OCT2025",
+    "isIsolatedOnly": false,
+    "tokenId": 2,
+    "marketId": 7,
+    "maturity": 1761868800,
+    "tickStep": 2,
+    "iTickThresh": 770
+}

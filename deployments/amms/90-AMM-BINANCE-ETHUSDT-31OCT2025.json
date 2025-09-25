@@ -1,0 +1,10 @@
+{
+    "address": "0x9daef3dA042E38c1646686d2D24Ff686d8D3a192",
+    "name": "Boros AMM - Binance ETHUSDT 31 Oct 2025",
+    "symbol": "AMM-BINANCE-ETHUSDT-31OCT2025",
+    "ammId": 90,
+    "tokenId": 2,
+    "marketId": 9,
+    "maturity": 1761868800,
+    "isPositive": true
+}
