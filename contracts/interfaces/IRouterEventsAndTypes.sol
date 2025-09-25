@@ -145,6 +145,21 @@ interface IRouterEventsAndTypes {
         uint64 nonce;
     }
 
+    // ---- requests sent by accManager ----
+
+    struct ApproveAgentReq {
+        address root;
+        uint8 accountId;
+        address agent;
+        uint64 expiry;
+    }
+
+    struct RevokeAgentsReq {
+        address root;
+        uint8 accountId;
+        address[] agents;
+    }
+
     // ---- messages signed by agent ----
 
     struct PendleSignTx {

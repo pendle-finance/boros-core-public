@@ -12,7 +12,8 @@ import {Account, AccountLib} from "./../../../types/Account.sol";
 import {RouterAccountBase} from "./../auth-base/RouterAccountBase.sol";
 import {AuthBase} from "./../auth-base/AuthBase.sol";
 
-// * Functions in here are callable only by Pendle's relayer
+// * Functions in here are callable only by Pendle's relayer, except for approveAgent and revokeAgent,
+//   which have variants that can be called by accManager.
 contract AuthModule is IAuthModule, AuthBase, RouterAccountBase, PendleRolesPlugin {
     using Address for address;
     using AccountLib for address;
@@ -112,12 +113,7 @@ contract AuthModule is IAuthModule, AuthBase, RouterAccountBase, PendleRolesPlug
 
         _verifySignerSigAndIncreaseNonce(accManager, message.nonce, _hashApproveAgentMessage(message), signature);
 
-        _approveAgent(account, message.agent, message.expiry);
-
-        if (account.isMain()) {
-            Account accAmm = account.root().toAMM();
-            _approveAgent(accAmm, message.agent, message.expiry);
-        }
+        _approveAgentAndSyncAMMAcc(account, message.agent, message.expiry);
     }
 
     // * No setAuth is needed since this function doesn't delegate call
@@ -128,7 +124,33 @@ contract AuthModule is IAuthModule, AuthBase, RouterAccountBase, PendleRolesPlug
         _verifySignerSigAndIncreaseNonce(accManager, message.nonce, _hashRevokeAgentsMessage(message), signature);
 
         for (uint256 i = 0; i < message.agents.length; i++) {
-            _revokeAgent(account, message.agents[i]);
+            _revokeAgentAndSyncAMMAcc(account, message.agents[i]);
+        }
+    }
+
+    // ------------------------------------------------------------
+    // ---------------- DIRECT CALL BY ACC MANAGER ----------------
+    // ------------------------------------------------------------
+
+    // * No setAuth is needed since this function doesn't delegate call
+    function approveAgent(ApproveAgentReq memory req) external {
+        Account account = AccountLib.from(req.root, req.accountId);
+        address accManager = accountManager(account);
+
+        require(msg.sender == accManager, Err.Unauthorized());
+
+        _approveAgentAndSyncAMMAcc(account, req.agent, req.expiry);
+    }
+
+    // * No setAuth is needed since this function doesn't delegate call
+    function revokeAgent(RevokeAgentsReq memory req) external {
+        Account account = AccountLib.from(req.root, req.accountId);
+        address accManager = accountManager(account);
+
+        require(msg.sender == accManager, Err.Unauthorized());
+
+        for (uint256 i = 0; i < req.agents.length; i++) {
+            _revokeAgentAndSyncAMMAcc(account, req.agents[i]);
         }
     }
 
@@ -146,6 +168,22 @@ contract AuthModule is IAuthModule, AuthBase, RouterAccountBase, PendleRolesPlug
     function _revokeAgent(Account acc, address agent) internal {
         delete _AMS().agentExpiry[acc][agent];
         emit AgentRevoked(acc, agent);
+    }
+
+    function _approveAgentAndSyncAMMAcc(Account acc, address agent, uint64 expiry) internal {
+        _approveAgent(acc, agent, expiry);
+        if (acc.isMain()) {
+            Account accAmm = acc.root().toAMM();
+            _approveAgent(accAmm, agent, expiry);
+        }
+    }
+
+    function _revokeAgentAndSyncAMMAcc(Account acc, address agent) internal {
+        _revokeAgent(acc, agent);
+        if (acc.isMain()) {
+            Account accAmm = acc.root().toAMM();
+            _revokeAgent(accAmm, agent);
+        }
     }
 
     // ------------------------------------------------------------

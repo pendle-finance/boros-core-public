@@ -21,6 +21,10 @@ interface IAuthModule is IRouterEventsAndTypes {
 
     function revokeAgent(RevokeAgentsMessage memory data, bytes memory signature) external;
 
+    function approveAgent(ApproveAgentReq memory req) external;
+
+    function revokeAgent(RevokeAgentsReq memory req) external;
+
     function systemRevokeAgent(Account[] memory accounts, address[] memory agents) external;
 
     function agentExecute(

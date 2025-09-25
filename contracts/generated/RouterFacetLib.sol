@@ -21,7 +21,8 @@ library RouterFacetLib {
                 } else {
                     if (sig < 0x27b1b0d3) {
                         if (sig == 0x22f0e36f) return authModule;  // (numCmp: 5) signerNonce(address)
-                        if (sig == 0x2549edd0) return miscModule;  // (numCmp: 6) initialize(string,string,uint16)
+                        if (sig == 0x24218484) return authModule;  // (numCmp: 6) revokeAgent((address,uint8,address[]))
+                        if (sig == 0x2549edd0) return miscModule;  // (numCmp: 7) initialize(string,string,uint16)
                     } else {
                         if (sig == 0x27b1b0d3) return ammModule;  // (numCmp: 5) swapWithAmm((bool,uint24,int256,int128))
                         if (sig == 0x34da5c82) return ammModule;  // (numCmp: 6) removeLiquidityDualFromAmm((bool,uint24,uint256,int256,int256,int256))
@@ -51,7 +52,7 @@ library RouterFacetLib {
                 }
             }
         } else {
-            if (sig < 0xb412c67c) {
+            if (sig < 0xb06620b1) {
                 if (sig < 0x9155fff2) {
                     if (sig < 0x8e728bb2) {
                         if (sig == 0x8c69996c) return tradeModule;  // (numCmp: 5) placeSingleOrder(((bool,uint24,uint24,uint8,uint8,uint256,int16),bool,uint64,bool,uint256,bool,int128))
@@ -75,8 +76,9 @@ library RouterFacetLib {
             } else {
                 if (sig < 0xdac47d9f) {
                     if (sig < 0xc4476890) {
-                        if (sig == 0xb412c67c) return tradeModule;  // (numCmp: 5) bulkOrders((bool,(uint24,(uint8,uint8,uint256[],int16[]),(uint64[],bool,bool))[],int128[]))
-                        if (sig == 0xc32025a0) return authModule;  // (numCmp: 6) agentExecute(address,(bytes21,bytes32,uint64),bytes,bytes)
+                        if (sig == 0xb06620b1) return authModule;  // (numCmp: 5) approveAgent((address,uint8,address,uint64))
+                        if (sig == 0xb412c67c) return tradeModule;  // (numCmp: 6) bulkOrders((bool,(uint24,(uint8,uint8,uint256[],int16[]),(uint64[],bool,bool))[],int128[]))
+                        if (sig == 0xc32025a0) return authModule;  // (numCmp: 7) agentExecute(address,(bytes21,bytes32,uint64),bytes,bytes)
                     } else {
                         if (sig == 0xc4476890) return miscModule;  // (numCmp: 5) isAllowedRelayer(address)
                         if (sig == 0xc9c437b3) return authModule;  // (numCmp: 6) agentExpiry(bytes21,address)
@@ -97,7 +99,7 @@ library RouterFacetLib {
         }
         assert(false);
     }
-    // {"numSig":43,"numDivideBranch":15,"maxLv":7,"avg":5.884,"std":0.784,"stopBranch":3}
+    // {"numSig":45,"numDivideBranch":15,"maxLv":7,"avg":5.933,"std":0.8,"stopBranch":3}
 }
 
 // slither-disable-end cyclomatic-complexity
