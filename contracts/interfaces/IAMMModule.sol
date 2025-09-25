@@ -13,7 +13,7 @@ interface IAMMModule is IRouterEventsAndTypes {
 
     function addLiquiditySingleCashToAmm(
         AddLiquiditySingleCashToAmmReq memory req
-    ) external returns (uint256 netLpOut, int256 netCashUsed, uint256 totalTakerOtcFee, int256 swapSizeOut);
+    ) external returns (uint256 netLpOut, int256 netCashUsed, uint256 totalTakerOtcFee, Trade swapTradeInterm);
 
     function removeLiquidityDualFromAmm(
         RemoveLiquidityDualFromAmmReq memory req
@@ -21,5 +21,5 @@ interface IAMMModule is IRouterEventsAndTypes {
 
     function removeLiquiditySingleCashFromAmm(
         RemoveLiquiditySingleCashFromAmmReq memory req
-    ) external returns (int256 netCashOut, uint256 netTakerOtcFee, int256 swapSizeInterm);
+    ) external returns (int256 netCashOut, uint256 netTakerOtcFee, Trade swapTradeInterm);
 }

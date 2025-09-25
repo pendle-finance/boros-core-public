@@ -58,7 +58,7 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
     )
         external
         setNonAuth
-        returns (uint256 /*netLpOut*/, int256 /*netCashIn*/, uint256 /*totalTakerOtcFee*/, int256 /*swapSizeOut*/)
+        returns (uint256 /*netLpOut*/, int256 /*netCashIn*/, uint256 /*totalTakerOtcFee*/, Trade /*swapTradeInterm*/)
     {
         (MarketAcc user, MarketAcc amm) = _getUserAndAMM(req.cross, req.ammId);
 
@@ -66,14 +66,14 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
             _MARKET_HUB.enterMarket(user, amm.marketId());
         }
 
-        (int256 swapSizeOut, int256 swapCashIn, uint256 swapTakerOtcFee) = _swapToAddLiquidity(req, user, amm);
+        (Trade swapTrade, int256 swapCashIn, uint256 swapTakerOtcFee) = _swapToAddLiquidity(req, user, amm);
 
         AddLiquiditySingleCashToAmmReq memory _req = req; // hoist to avoid stack too deep
         (uint256 netLpOut, int256 mintCashIn, uint256 mintOtcFee) = _mintAMM(
             user,
             amm,
             _req.netCashIn - swapCashIn,
-            swapSizeOut
+            swapTrade.signedSize()
         );
 
         int256 netCashIn = swapCashIn + mintCashIn;
@@ -82,9 +82,16 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
         require(netCashIn <= _req.netCashIn, Err.AMMInsufficientCashIn());
 
         uint256 totalTakerOtcFee = swapTakerOtcFee + mintOtcFee;
-        emit AddLiquiditySingleCashToAmm(user, _req.ammId, netLpOut, netCashIn, totalTakerOtcFee, swapSizeOut);
+        emit AddLiquiditySingleCashToAmm(
+            user,
+            _req.ammId,
+            netLpOut,
+            netCashIn,
+            totalTakerOtcFee,
+            swapTrade.signedSize()
+        );
 
-        return (netLpOut, netCashIn, totalTakerOtcFee, swapSizeOut);
+        return (netLpOut, netCashIn, totalTakerOtcFee, swapTrade);
     }
 
     function removeLiquidityDualFromAmm(
@@ -104,14 +111,17 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
 
     function removeLiquiditySingleCashFromAmm(
         RemoveLiquiditySingleCashFromAmmReq memory req
-    ) external setNonAuth returns (int256 netCashOut, uint256 netTakerOtcFee, int256 swapSizeInterm) {
+    ) external setNonAuth returns (int256 netCashOut, uint256 netTakerOtcFee, Trade swapTradeInterm) {
         (MarketAcc user, MarketAcc amm) = _getUserAndAMM(req.cross, req.ammId);
 
-        (int256 burnCashOut, int256 burnSizeOut, uint256 burnOtcFee) = _burnAMM(user, amm, req.lpToRemove);
+        int256 swapSizeInterm;
+        {
+            (int256 burnCashOut, int256 burnSizeOut, uint256 burnOtcFee) = _burnAMM(user, amm, req.lpToRemove);
 
-        netCashOut = burnCashOut;
-        netTakerOtcFee = burnOtcFee;
-        swapSizeInterm = -burnSizeOut;
+            netCashOut = burnCashOut;
+            netTakerOtcFee = burnOtcFee;
+            swapSizeInterm = -burnSizeOut;
+        }
 
         if (swapSizeInterm != 0) {
             MarketCache memory cache = _getMarketCache(amm.marketId());
@@ -119,15 +129,17 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
             (Side side, int16 limitTick) = _toSideAndLimitTick(swapSizeInterm);
             SwapMathParams memory swaps = _createSwapMathParams(cache, user, amm, side, _getTimeToMat(cache));
 
-            (Trade matched, uint256 takerOtcFee) = _splitAndSwapBookAMM(
+            uint256 takerOtcFee;
+            (swapTradeInterm, takerOtcFee) = _splitAndSwapBookAMM(
                 swaps,
                 TimeInForce.FOK,
                 swapSizeInterm,
                 limitTick,
                 OrderIdLib.ZERO
             );
+            swapTradeInterm.requireDesiredSideAndRate(req.desiredSwapSide, req.desiredSwapRate);
 
-            netCashOut -= matched.toUpfrontFixedCost(_getTimeToMat(cache)) + takerOtcFee.Int();
+            netCashOut -= swapTradeInterm.toUpfrontFixedCost(_getTimeToMat(cache)) + takerOtcFee.Int();
             netTakerOtcFee += takerOtcFee;
         }
 
@@ -142,7 +154,7 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
             swapSizeInterm
         );
 
-        return (netCashOut, netTakerOtcFee, swapSizeInterm);
+        return (netCashOut, netTakerOtcFee, swapTradeInterm);
     }
 
     function _getUserAndAMM(bool cross, AMMId ammId) internal view returns (MarketAcc user, MarketAcc amm) {
@@ -162,7 +174,7 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
         AddLiquiditySingleCashToAmmReq memory req,
         MarketAcc user,
         MarketAcc amm
-    ) internal returns (int256 /*netSizeOut*/, int256 /*netCashIn*/, uint256 /*takerOtcFee*/) {
+    ) internal returns (Trade swapTradeInterm, int256 netCashIn, uint256 takerOtcFee) {
         LiquidityMathParams memory params = _createLiquidityMathParams(req, user, amm);
 
         (int256 withBook, int256 withAMM) = params.approxSwapToAddLiquidity();
@@ -174,13 +186,10 @@ contract AMMModule is IAMMModule, RouterAccountBase, BookAmmSwapBase {
         }
 
         CancelData memory emptyCancels;
-        (Trade totalMatched, uint256 takerOtcFee) = _swapBookAMM(user, amm, withAMM, orders, emptyCancels);
+        (swapTradeInterm, takerOtcFee) = _swapBookAMM(user, amm, withAMM, orders, emptyCancels);
+        swapTradeInterm.requireDesiredSideAndRate(req.desiredSwapSide, req.desiredSwapRate);
 
-        int256 netSizeOut = totalMatched.signedSize();
-
-        int256 netCashIn = totalMatched.toUpfrontFixedCost(params.timeToMat()) + takerOtcFee.Int();
-
-        return (netSizeOut, netCashIn, takerOtcFee);
+        netCashIn = swapTradeInterm.toUpfrontFixedCost(params.timeToMat()) + takerOtcFee.Int();
     }
 
     function _createLiquidityMathParams(

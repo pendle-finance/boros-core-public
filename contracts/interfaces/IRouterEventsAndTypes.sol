@@ -174,6 +174,8 @@ interface IRouterEventsAndTypes {
         bool enterMarket;
         int256 netCashIn;
         uint256 minLpOut;
+        Side desiredSwapSide;
+        int128 desiredSwapRate;
     }
 
     struct RemoveLiquidityDualFromAmmReq {
@@ -190,6 +192,8 @@ interface IRouterEventsAndTypes {
         AMMId ammId;
         uint256 lpToRemove;
         int256 minCashOut;
+        Side desiredSwapSide;
+        int128 desiredSwapRate;
     }
 
     struct OrderReq {
