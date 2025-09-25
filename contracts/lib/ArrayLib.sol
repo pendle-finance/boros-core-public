@@ -5,6 +5,16 @@ import {OrderId} from "../types/Order.sol";
 import {SweptF, MarketId} from "../types/MarketTypes.sol";
 
 library ArrayLib {
+    // @dev Returns the index of the first element that is equal to `id`.
+    // @dev Returns `arr.length` if no element is equal to `id`.
+    function find(MarketId[] memory arr, MarketId id) internal pure returns (uint256) {
+        uint256 i = 0;
+        for (; i < arr.length; i++) {
+            if (arr[i] == id) break;
+        }
+        return i;
+    }
+
     function include(MarketId[] memory arr, MarketId id) internal pure returns (bool) {
         for (uint256 i = 0; i < arr.length; i++) {
             if (arr[i] == id) return true;

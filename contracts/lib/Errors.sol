@@ -103,12 +103,6 @@ library Err {
     error AuthExpiryInPast();
     error AuthSelectorNotAllowed();
 
-    // Funding Rate Aggregator Errors
-    error NotEnoughReports();
-    error DuplicateOracleType();
-    error FundingTimestampMismatch();
-    error FundingRateMismatch();
-
     // Executors Errors
     error InsufficientProfit();
     error ProfitMismatch();
@@ -118,19 +112,24 @@ library Err {
     error CLOInvalidThreshold();
     error CLOThresholdNotMet();
     error CLOMarketInvalidStatus();
+    error DeleveragerAMMNotAllowed();
     error DeleveragerDuplicateMarketId();
     error DeleveragerHealthNonRisky();
-    error DeleveragerUnsatCondition();
+    error DeleveragerLoserHealthier();
+    error DeleveragerLoserInBadDebt();
     error DeleveragerWinnerInBadDebt();
-    error DeleveragerNonZeroRemainingSize();
+    error DeleveragerIncomplete();
     error OrderCancellerDuplicateMarketId();
     error OrderCancellerDuplicateOrderId();
     error OrderCancellerInvalidOrder();
     error OrderCancellerNotRisky();
     error PauserNotRisky();
     error PauserTokenMismatch();
+    error WithdrawalPoliceAlreadyRestricted();
+    error WithdrawalPoliceInvalidCooldown();
     error WithdrawalPoliceInvalidThreshold();
     error WithdrawalPoliceUnsatCondition();
+    error ZoneGlobalCooldownAlreadyIncreased();
     error ZoneMarketInvalidStatus();
     error ZoneInvalidGlobalCooldown();
     error ZoneInvalidLiqSettings();

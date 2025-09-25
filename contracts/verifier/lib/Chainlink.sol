@@ -41,17 +41,17 @@ struct ReportFundingRate {
     uint32 epochDuration;
 }
 
-library ChainLinkVerifierLib {
+library ChainlinkVerifierLib {
     function _verifyReportVersionAndGetFee(
         bytes memory report,
-        address chainLink
+        address chainlink
     ) private returns (bytes memory /*parameterPayload*/, uint256 /*fee*/) {
         (, bytes memory reportData) = abi.decode(report, (bytes32[3], bytes));
 
         uint16 reportVersion = (uint16(uint8(reportData[0])) << 8) | uint16(uint8(reportData[1]));
         require(reportVersion == 5, "Invalid report version");
 
-        IFeeManager feeManager = IFeeManager(IVerifierProxy(chainLink).s_feeManager());
+        IFeeManager feeManager = IFeeManager(IVerifierProxy(chainlink).s_feeManager());
         if (address(feeManager) == address(0)) {
             return ("", 0);
         }
@@ -63,24 +63,25 @@ library ChainLinkVerifierLib {
 
     function verifyFundingRateReport(
         bytes memory report,
-        address chainLink,
+        address chainlink,
         bytes32 expectedFeedId,
         uint256 maxVerificationFee,
-        uint32 lastUpdatedTime,
-        uint32 period
+        uint32 period,
+        uint32 lastUpdatedTime
     ) internal returns (int112 fundingRate, uint32 fundingTimestamp) {
-        (bytes memory parameterPayload, uint256 fee) = _verifyReportVersionAndGetFee(report, chainLink);
+        (bytes memory parameterPayload, uint256 fee) = _verifyReportVersionAndGetFee(report, chainlink);
         require(fee <= maxVerificationFee, "Verification fee too high");
 
-        bytes memory verifiedReportData = IVerifierProxy(chainLink).verify{value: fee}(report, parameterPayload);
+        bytes memory verifiedReportData = IVerifierProxy(chainlink).verify{value: fee}(report, parameterPayload);
         ReportFundingRate memory verifiedReport = abi.decode(verifiedReportData, (ReportFundingRate));
 
         require(verifiedReport.feedId == expectedFeedId, "Invalid feed id");
 
         fundingRate = PMath.Int112(verifiedReport.fundingRate);
         fundingTimestamp = verifiedReport.fundingTimestamp;
+        uint256 epochDuration = verifiedReport.epochDuration;
 
-        require(verifiedReport.epochDuration == period, "Invalid epoch duration");
+        require(epochDuration == period, "Invalid epoch duration");
         require(lastUpdatedTime + period == fundingTimestamp, "Invalid funding timestamp");
     }
 }
