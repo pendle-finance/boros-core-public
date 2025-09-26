@@ -18,8 +18,8 @@
     },
     "router": "0x8080808080daB95eFED788a9214e400ba552DEf6",
     "routerModules": {
-        "ammModule": "0xb8308892D4B3da507b65077D49Cd66CB1d00b8AB",
-        "authModule": "0xCd93362b77E920E74570C0eAf501a24Fcc6C1311",
+        "ammModule": "0x8C8436f76618be610a2e9B630B7687f13714E2d3",
+        "authModule": "0xEf97C20dEd1654A02b9AD5005Ffc9ca1acE1232f",
         "miscModule": "0x66bBFda304b462AcC436a645aE8ECE2087Ba5B31",
         "tradeModule": "0xB828fE79213Aff70831aaFEba0d17418CB8d6EeA"
     }
