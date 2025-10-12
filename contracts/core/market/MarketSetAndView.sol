@@ -23,6 +23,8 @@ import {MarketInfoAndState} from "./core/MarketInfoAndState.sol";
 import {MarketOffView} from "./MarketOffView.sol";
 
 contract MarketSetAndView is IMarketSetting, MarketOffView, PendleRolesPlugin {
+    uint256 public constant VERSION = 2;
+
     constructor(
         address marketHub_,
         address permissionController_

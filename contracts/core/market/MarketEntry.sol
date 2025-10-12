@@ -35,6 +35,8 @@ import {LiquidationViewUtils} from "./margin/LiquidationViewUtils.sol";
 contract MarketEntry is IMarketEntry, CoreOrderUtils, CoreStateUtils, LiquidationViewUtils, Proxy {
     using PMath for uint256;
 
+    uint256 public constant VERSION = 2;
+
     address internal immutable _MARKET_SETTING_AND_VIEW;
     address internal immutable _MARKET_ORDER_AND_OTC;
     address internal immutable _MARKET_RISK_MANAGEMENT;

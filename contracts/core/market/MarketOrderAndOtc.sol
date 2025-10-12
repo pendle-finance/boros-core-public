@@ -23,6 +23,8 @@ contract MarketOrderAndOtc is IMarketOrderAndOtc, CoreOrderUtils, CoreStateUtils
     using PMath for int256;
     using PMath for uint256;
 
+    uint256 public constant VERSION = 2;
+
     constructor(address marketHub_) MarketInfoAndState(marketHub_) {
         _disableInitializers();
     }

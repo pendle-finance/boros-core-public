@@ -15,6 +15,8 @@ import {Side} from "../../types/Order.sol";
 import {Err} from "../../lib/Errors.sol";
 
 contract MarketRiskManagement is IMarketRiskManagement, CoreOrderUtils, CoreStateUtils, LiquidationViewUtils {
+    uint256 public constant VERSION = 2;
+
     constructor(address marketHub_) MarketInfoAndState(marketHub_) {
         _disableInitializers();
     }
