@@ -78,9 +78,9 @@ abstract contract CoreOrderUtils is OrderBookUtils, PendingOIPureUtils, RateUtil
             return false;
         } else if (tif == TimeInForce.ALO) {
             require(prevMatched.isZero(), Err.MarketOrderALOFilled());
-            return true;
+            return !hasMatchedAll;
         } else if (tif == TimeInForce.SOFT_ALO) {
-            return true;
+            return !hasMatchedAll;
         } else {
             assert(false);
         }
