@@ -11,10 +11,10 @@
     "ammFactory": "0x3205e972714B52512c837AE6f5FCFDeB07f0f23C",
     "marketFactory": "0x3080808080Ee6a795c1a6Ff388195Aa5F11ECeE0",
     "marketImplementation": {
-        "marketEntry": "0x24dD03c7D07e502d9A1Fa2D7fd5CF3f69CCBf570",
-        "marketSetAndView": "0x613E200A41f8455CbDf3cD19428D222BB4B42006",
-        "marketOrderAndOtc": "0x367C61a16bEe3fa8b8d0a3F05aC436aAe723D062",
-        "marketRiskManagement": "0xAf8ccFb87b2A5790B64705Fca5e84C5FF3E3E43F"
+        "marketEntry": "0x1E4157d8ac575F2215b44F699e3BC8944f7f63C0",
+        "marketSetAndView": "0xA833D6d78948f2B766e0240247EBB8CDc7E13662",
+        "marketOrderAndOtc": "0x1d24ba5e778D715708d87B2c718E81f1f16E52C1",
+        "marketRiskManagement": "0xdA1ccBC1A234080216938d003EC6946aC4a73A7d"
     },
     "router": "0x8080808080daB95eFED788a9214e400ba552DEf6",
     "routerModules": {
