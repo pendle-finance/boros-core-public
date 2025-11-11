@@ -30,6 +30,16 @@ interface IRouterEventsAndTypes {
         uint256 takerFee
     );
 
+    event ConditionalOrderExecuted(
+        MarketAcc indexed user,
+        bytes32 orderHash,
+        MarketId marketId,
+        AMMId ammId,
+        TimeInForce tif,
+        Trade matched,
+        uint256 takerOtcFee
+    );
+
     event SwapWithAmm(
         MarketAcc indexed user,
         MarketId indexed marketId,
@@ -168,6 +178,10 @@ interface IRouterEventsAndTypes {
         uint64 nonce;
     }
 
+    struct PlaceConditionalActionMessage {
+        bytes32 actionHash;
+    }
+
     struct SwapWithAmmReq {
         bool cross;
         AMMId ammId;
@@ -233,6 +247,20 @@ interface IRouterEventsAndTypes {
         int128 desiredMatchRate;
     }
 
+    struct ConditionalOrder {
+        Account account;
+        bool cross;
+        MarketId marketId;
+        Side side;
+        TimeInForce tif;
+        uint256 size;
+        int16 tick;
+        bool reduceOnly;
+        uint256 salt;
+        uint64 expiry;
+        bytes32 hashedOffchainCondition;
+    }
+
     struct BulkOrdersReq {
         bool cross;
         BulkOrder[] bulks;
@@ -268,6 +296,26 @@ interface IRouterEventsAndTypes {
         bool cross;
         bool isEnter;
         MarketId[] marketIds;
+    }
+
+    // ---- messages signed by validator ----
+
+    struct ExecuteConditionalOrderMessage {
+        bytes32 orderHash;
+        bytes execParams;
+        uint64 expiry;
+    }
+
+    struct ExecuteConditionalOrderReq {
+        ConditionalOrder order;
+        bytes execParams;
+        //
+        address agent;
+        bytes placeSig;
+        //
+        address validator;
+        uint64 execMsgExpiry;
+        bytes execSig;
     }
 
     // ---- internal ----

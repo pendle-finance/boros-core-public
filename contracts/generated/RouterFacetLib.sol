@@ -6,17 +6,18 @@ pragma solidity ^0.8.28;
 // slither-disable-start cyclomatic-complexity
 // prettier-ignore
 library RouterFacetLib {
-    function resolveRouterFacet(bytes4 sig, address ammModule, address authModule, address miscModule, address tradeModule) internal pure returns (address resolvedFacet) {
-        if (sig < 0x8c69996c) {
-            if (sig < 0x4b1fc07f) {
+    function resolveRouterFacet(bytes4 sig, address ammModule, address authModule, address conditionalModule, address miscModule, address tradeModule) internal pure returns (address resolvedFacet) {
+        if (sig < 0x80fc6ec7) {
+            if (sig < 0x49c31adc) {
                 if (sig < 0x22f0e36f) {
-                    if (sig < 0x1cea11dd) {
+                    if (sig < 0x1e0a95af) {
                         if (sig == 0x0e1490a8) return authModule;  // (numCmp: 5) requestVaultWithdrawal((address,uint16,uint256,uint64),bytes)
                         if (sig == 0x158404db) return authModule;  // (numCmp: 6) systemRevokeAgent(bytes21[],address[])
+                        if (sig == 0x1cea11dd) return tradeModule;  // (numCmp: 7) vaultDeposit(uint8,uint16,uint24,uint256)
                     } else {
-                        if (sig == 0x1cea11dd) return tradeModule;  // (numCmp: 5) vaultDeposit(uint8,uint16,uint24,uint256)
-                        if (sig == 0x1e0a95af) return miscModule;  // (numCmp: 6) tryAggregate(bool,bytes[])
-                        if (sig == 0x217e0d4c) return authModule;  // (numCmp: 7) setAccManager((address,uint8,address,uint64),bytes)
+                        if (sig == 0x1e0a95af) return miscModule;  // (numCmp: 5) tryAggregate(bool,bytes[])
+                        if (sig == 0x217e0d4c) return authModule;  // (numCmp: 6) setAccManager((address,uint8,address,uint64),bytes)
+                        if (sig == 0x21c49e39) return conditionalModule;  // (numCmp: 7) isActionExecuted(bytes32)
                     }
                 } else {
                     if (sig < 0x27b1b0d3) {
@@ -25,29 +26,30 @@ library RouterFacetLib {
                         if (sig == 0x2549edd0) return miscModule;  // (numCmp: 7) initialize(string,string,uint16)
                     } else {
                         if (sig == 0x27b1b0d3) return ammModule;  // (numCmp: 5) swapWithAmm((bool,uint24,int256,int128))
-                        if (sig == 0x34da5c82) return ammModule;  // (numCmp: 6) removeLiquidityDualFromAmm((bool,uint24,uint256,int256,int256,int256))
-                        if (sig == 0x49c31adc) return tradeModule;  // (numCmp: 7) enterExitMarkets((bool,bool,uint24[]))
+                        if (sig == 0x2a0bf192) return conditionalModule;  // (numCmp: 6) executeConditionalOrder(((bytes21,bool,uint24,uint8,uint8,uint256,int16,bool,uint256,uint64,bytes32),bytes,address,bytes,address,uint64,bytes))
+                        if (sig == 0x34da5c82) return ammModule;  // (numCmp: 7) removeLiquidityDualFromAmm((bool,uint24,uint256,int256,int256,int256))
                     }
                 }
             } else {
                 if (sig < 0x58393492) {
                     if (sig < 0x5092d247) {
-                        if (sig == 0x4b1fc07f) return authModule;  // (numCmp: 5) subaccountTransfer((address,uint8,uint16,uint24,uint256,bool,uint64),bytes)
-                        if (sig == 0x5065e6f9) return tradeModule;  // (numCmp: 6) ammCashTransfer((uint24,uint256,bool))
+                        if (sig == 0x49c31adc) return tradeModule;  // (numCmp: 5) enterExitMarkets((bool,bool,uint24[]))
+                        if (sig == 0x4b1fc07f) return authModule;  // (numCmp: 6) subaccountTransfer((address,uint8,uint16,uint24,uint256,bool,uint64),bytes)
+                        if (sig == 0x5065e6f9) return tradeModule;  // (numCmp: 7) ammCashTransfer((uint24,uint256,bool))
                     } else {
                         if (sig == 0x5092d247) return ammModule;  // (numCmp: 5) removeLiquiditySingleCashFromAmm((bool,uint24,uint256,int256,uint8,int128))
                         if (sig == 0x53b7cbab) return miscModule;  // (numCmp: 6) batchRevert((bytes21,address,bytes)[])
                         if (sig == 0x5471cba5) return authModule;  // (numCmp: 7) vaultDeposit((address,uint8,uint16,uint24,uint256,uint64),bytes)
                     }
                 } else {
-                    if (sig < 0x75836431) {
+                    if (sig < 0x73a886d7) {
                         if (sig == 0x58393492) return miscModule;  // (numCmp: 5) maxIterationAndEps()
-                        if (sig == 0x5896bd48) return authModule;  // (numCmp: 6) revokeAgent((address,uint8,address[],uint64),bytes)
-                        if (sig == 0x73a886d7) return tradeModule;  // (numCmp: 7) cancelVaultWithdrawal(uint16)
+                        if (sig == 0x58655b40) return conditionalModule;  // (numCmp: 6) setConditionalValidator(address,bool)
+                        if (sig == 0x5896bd48) return authModule;  // (numCmp: 7) revokeAgent((address,uint8,address[],uint64),bytes)
                     } else {
-                        if (sig == 0x75836431) return miscModule;  // (numCmp: 5) ammIdToAcc(uint24)
-                        if (sig == 0x7d9a62bc) return miscModule;  // (numCmp: 6) setNumTicksToTryAtOnce(uint16)
-                        if (sig == 0x80fc6ec7) return ammModule;  // (numCmp: 7) addLiquiditySingleCashToAmm((bool,uint24,bool,int256,uint256,uint8,int128))
+                        if (sig == 0x73a886d7) return tradeModule;  // (numCmp: 5) cancelVaultWithdrawal(uint16)
+                        if (sig == 0x75836431) return miscModule;  // (numCmp: 6) ammIdToAcc(uint24)
+                        if (sig == 0x7d9a62bc) return miscModule;  // (numCmp: 7) setNumTicksToTryAtOnce(uint16)
                     }
                 }
             }
@@ -55,8 +57,9 @@ library RouterFacetLib {
             if (sig < 0xb06620b1) {
                 if (sig < 0x9155fff2) {
                     if (sig < 0x8e728bb2) {
-                        if (sig == 0x8c69996c) return tradeModule;  // (numCmp: 5) placeSingleOrder(((bool,uint24,uint24,uint8,uint8,uint256,int16),bool,uint64,bool,uint256,bool,int128))
-                        if (sig == 0x8c9f3c55) return authModule;  // (numCmp: 6) vaultPayTreasury((address,uint16,uint256,uint64),bytes)
+                        if (sig == 0x80fc6ec7) return ammModule;  // (numCmp: 5) addLiquiditySingleCashToAmm((bool,uint24,bool,int256,uint256,uint8,int128))
+                        if (sig == 0x8c69996c) return tradeModule;  // (numCmp: 6) placeSingleOrder(((bool,uint24,uint24,uint8,uint8,uint256,int16),bool,uint64,bool,uint256,bool,int128))
+                        if (sig == 0x8c9f3c55) return authModule;  // (numCmp: 7) vaultPayTreasury((address,uint16,uint256,uint64),bytes)
                     } else {
                         if (sig == 0x8e728bb2) return tradeModule;  // (numCmp: 5) bulkCancels((bool,uint24,bool,uint64[]))
                         if (sig == 0x913bcaaa) return miscModule;  // (numCmp: 6) approveMarketHubInf(uint16)
@@ -74,32 +77,36 @@ library RouterFacetLib {
                     }
                 }
             } else {
-                if (sig < 0xdac47d9f) {
-                    if (sig < 0xc4476890) {
+                if (sig < 0xd88b8975) {
+                    if (sig < 0xc32025a0) {
                         if (sig == 0xb06620b1) return authModule;  // (numCmp: 5) approveAgent((address,uint8,address,uint64))
                         if (sig == 0xb412c67c) return tradeModule;  // (numCmp: 6) bulkOrders((bool,(uint24,(uint8,uint8,uint256[],int16[]),(uint64[],bool,bool))[],int128[]))
-                        if (sig == 0xc32025a0) return authModule;  // (numCmp: 7) agentExecute(address,(bytes21,bytes32,uint64),bytes,bytes)
+                        if (sig == 0xb5adceeb) return conditionalModule;  // (numCmp: 7) isConditionalValidator(address)
                     } else {
-                        if (sig == 0xc4476890) return miscModule;  // (numCmp: 5) isAllowedRelayer(address)
-                        if (sig == 0xc9c437b3) return authModule;  // (numCmp: 6) agentExpiry(bytes21,address)
-                        if (sig == 0xd88b8975) return miscModule;  // (numCmp: 7) setMaxIterationAndEps(uint256,uint256)
+                        if (sig == 0xc32025a0) return authModule;  // (numCmp: 5) agentExecute(address,(bytes21,bytes32,uint64),bytes,bytes)
+                        if (sig == 0xc4476890) return miscModule;  // (numCmp: 6) isAllowedRelayer(address)
+                        if (sig == 0xc9c437b3) return authModule;  // (numCmp: 7) agentExpiry(bytes21,address)
                     }
                 } else {
-                    if (sig < 0xf53c08b8) {
-                        if (sig == 0xdac47d9f) return tradeModule;  // (numCmp: 5) subaccountTransfer(uint8,uint16,uint24,uint256,bool)
-                        if (sig == 0xf13ddc2e) return miscModule;  // (numCmp: 6) setAllowedRelayer(address,bool)
-                        if (sig == 0xf331b533) return miscModule;  // (numCmp: 7) batchSimulate((bytes21,address,bytes)[])
+                    if (sig < 0xf331b533) {
+                        if (sig == 0xd88b8975) return miscModule;  // (numCmp: 5) setMaxIterationAndEps(uint256,uint256)
+                        if (sig == 0xdac47d9f) return tradeModule;  // (numCmp: 6) subaccountTransfer(uint8,uint16,uint24,uint256,bool)
+                        if (sig == 0xf13ddc2e) return miscModule;  // (numCmp: 7) setAllowedRelayer(address,bool)
                     } else {
-                        if (sig == 0xf53c08b8) return miscModule;  // (numCmp: 5) numTicksToTryAtOnce()
-                        if (sig == 0xfa980fb1) return authModule;  // (numCmp: 6) accountManager(bytes21)
-                        if (sig == 0xffe6fb25) return authModule;  // (numCmp: 7) approveAgent((address,uint8,address,uint64,uint64),bytes)
+                        if (sig < 0xfa980fb1) {
+                            if (sig == 0xf331b533) return miscModule;  // (numCmp: 6) batchSimulate((bytes21,address,bytes)[])
+                            if (sig == 0xf53c08b8) return miscModule;  // (numCmp: 7) numTicksToTryAtOnce()
+                        } else {
+                            if (sig == 0xfa980fb1) return authModule;  // (numCmp: 6) accountManager(bytes21)
+                            if (sig == 0xffe6fb25) return authModule;  // (numCmp: 7) approveAgent((address,uint8,address,uint64,uint64),bytes)
+                        }
                     }
                 }
             }
         }
         assert(false);
     }
-    // {"numSig":45,"numDivideBranch":15,"maxLv":7,"avg":5.933,"std":0.8,"stopBranch":3}
+    // {"numSig":49,"numDivideBranch":16,"maxLv":7,"avg":6.041,"std":0.807,"stopBranch":3}
 }
 
 // slither-disable-end cyclomatic-complexity

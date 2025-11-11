@@ -14,20 +14,10 @@ import {ITradeModule} from "../../../interfaces/ITradeModule.sol";
 // Type Imports
 import {MarketAcc, Account, AccountLib} from "../../../types/Account.sol";
 import {Trade} from "../../../types/Trade.sol";
-import {
-    BulkOrderResult,
-    LongShort,
-    OTCTrade,
-    TokenId,
-    MarketId,
-    OrdersLib,
-    CancelData
-} from "../../../types/MarketTypes.sol";
-import {SideLib} from "../../../types/Order.sol";
+import {BulkOrderResult, CancelData, TokenId, MarketId} from "../../../types/MarketTypes.sol";
 
 // Router & Math Imports
 import {RouterAccountBase} from "../auth-base/RouterAccountBase.sol";
-import {SwapMathParams} from "../math/SwapMath.sol";
 import {BookAmmSwapBase} from "../trade-base/BookAmmSwapBase.sol";
 import {Err} from "../../../lib/Errors.sol";
 
@@ -36,7 +26,6 @@ contract TradeModule is ITradeModule, RouterAccountBase, BookAmmSwapBase {
     using AccountLib for address;
     using SafeERC20 for IERC20;
     using PMath for uint256;
-    using SideLib for uint256;
 
     constructor(address marketHub_) BookAmmSwapBase(marketHub_) {}
 
@@ -151,23 +140,7 @@ contract TradeModule is ITradeModule, RouterAccountBase, BookAmmSwapBase {
             _MARKET_HUB.enterMarket(user, marketId);
         }
 
-        if (!order.ammId.isZero()) {
-            MarketAcc amm = _getAMMIdToAcc(order.ammId);
-            require(amm.marketId() == marketId, Err.TradeMarketIdMismatch());
-
-            SwapMathParams memory swaps = _createSwapMathParams(cache, user, amm, order.side, _getTimeToMat(cache));
-            (matched, takerOtcFee) = _splitAndSwapBookAMM(
-                swaps,
-                order.tif,
-                order.size.toSignedSize(order.side),
-                order.tick,
-                req.idToStrictCancel
-            );
-        } else {
-            LongShort memory orders = OrdersLib.createOrders(order.side, order.tif, order.size, order.tick);
-            CancelData memory cancelData = OrdersLib.createCancel(req.idToStrictCancel, true);
-            (matched, takerOtcFee) = _MARKET_HUB.orderAndOtc(marketId, user, orders, cancelData, new OTCTrade[](0));
-        }
+        (matched, takerOtcFee) = _executeSingleOrder(cache, user, order, req.idToStrictCancel, req.desiredMatchRate);
 
         if (req.exitMarket) {
             _MARKET_HUB.exitMarket(user, marketId);
@@ -177,8 +150,6 @@ contract TradeModule is ITradeModule, RouterAccountBase, BookAmmSwapBase {
             require(order.cross == false, Err.TradeOnlyForIsolated());
             cashWithdrawn = _MARKET_HUB.cashTransferAll(user, user.toCross());
         }
-
-        matched.requireDesiredSideAndRate(req.order.side, req.desiredMatchRate);
 
         emit SingleOrderExecuted(user, marketId, order.ammId, order.tif, matched, takerOtcFee);
     }

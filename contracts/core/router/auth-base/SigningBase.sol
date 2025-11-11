@@ -99,6 +99,22 @@ abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
         ")"
     );
 
+    // prettier-ignore
+    bytes32 internal constant _PLACE_CONDITIONAL_ACTION_MESSAGE = keccak256(
+        "PlaceConditionalActionMessage("
+            "bytes32 actionHash"
+        ")"
+    );
+
+    // prettier-ignore
+    bytes32 internal constant _EXECUTE_CONDITIONAL_ORDER_MESSAGE = keccak256(
+        "ExecuteConditionalOrderMessage("
+            "bytes32 orderHash,"
+            "bytes execParams,"
+            "uint64 expiry"
+        ")"
+    );
+
     function _hashVaultDepositMessage(VaultDepositMessage memory message) internal view returns (bytes32) {
         return
             _hashTypedDataV4(
@@ -225,6 +241,28 @@ abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
         return
             _hashTypedDataV4(
                 keccak256(abi.encode(_PENDLE_SIGN_TX, message.account, message.connectionId, message.nonce))
+            );
+    }
+
+    function _hashPlaceConditionalActionMessage(
+        PlaceConditionalActionMessage memory message
+    ) internal view returns (bytes32) {
+        return _hashTypedDataV4(keccak256(abi.encode(_PLACE_CONDITIONAL_ACTION_MESSAGE, message.actionHash)));
+    }
+
+    function _hashExecuteConditionalOrderMessage(
+        ExecuteConditionalOrderMessage memory message
+    ) internal view returns (bytes32) {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        _EXECUTE_CONDITIONAL_ORDER_MESSAGE,
+                        message.orderHash,
+                        keccak256(message.execParams),
+                        message.expiry
+                    )
+                )
             );
     }
 }

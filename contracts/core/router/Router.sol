@@ -10,12 +10,20 @@ import {RouterFacetLib} from "./../../generated/RouterFacetLib.sol";
 contract Router is Proxy {
     address internal immutable _AMM_MODULE;
     address internal immutable _AUTH_MODULE;
+    address internal immutable _CONDITIONAL_MODULE;
     address internal immutable _MISC_MODULE;
     address internal immutable _TRADE_MODULE;
 
-    constructor(address ammModule_, address authModule_, address miscModule_, address tradeModule_) {
+    constructor(
+        address ammModule_,
+        address authModule_,
+        address conditionalModule_,
+        address miscModule_,
+        address tradeModule_
+    ) {
         _AMM_MODULE = ammModule_;
         _AUTH_MODULE = authModule_;
+        _CONDITIONAL_MODULE = conditionalModule_;
         _MISC_MODULE = miscModule_;
         _TRADE_MODULE = tradeModule_;
     }
@@ -26,6 +34,7 @@ contract Router is Proxy {
                 sig: msg.sig,
                 ammModule: _AMM_MODULE,
                 authModule: _AUTH_MODULE,
+                conditionalModule: _CONDITIONAL_MODULE,
                 miscModule: _MISC_MODULE,
                 tradeModule: _TRADE_MODULE
             });

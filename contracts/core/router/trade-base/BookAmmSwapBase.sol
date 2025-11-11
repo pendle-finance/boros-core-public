@@ -12,7 +12,7 @@ import {Err} from "../../../lib/Errors.sol";
 // Types
 import {MarketAcc} from "../../../types/Account.sol";
 import {CancelData, GetRequest, LongShort, OrdersLib, MarketId, OTCTrade} from "../../../types/MarketTypes.sol";
-import {OrderId, Side, TimeInForce} from "../../../types/Order.sol";
+import {OrderId, Side, SideLib, TimeInForce} from "../../../types/Order.sol";
 import {Trade, TradeLib} from "../../../types/Trade.sol";
 
 // Router & Math
@@ -23,8 +23,43 @@ import {IMarket} from "../../../interfaces/IMarket.sol";
 
 contract BookAmmSwapBase is IRouterEventsAndTypes, TradeStorage {
     using PMath for uint256;
+    using SideLib for uint256;
 
     constructor(address marketHub_) TradeStorage(marketHub_) {}
+
+    function _executeSingleOrder(
+        MarketCache memory cache,
+        MarketAcc user,
+        OrderReq memory order,
+        OrderId idToStrictCancel,
+        int128 desiredMatchRate
+    ) internal returns (Trade matched, uint256 takerOtcFee) {
+        if (!order.ammId.isZero()) {
+            MarketAcc amm = _getAMMIdToAcc(order.ammId);
+            require(amm.marketId() == order.marketId, Err.TradeMarketIdMismatch());
+
+            SwapMathParams memory swaps = _createSwapMathParams(cache, user, amm, order.side, _getTimeToMat(cache));
+            (matched, takerOtcFee) = _splitAndSwapBookAMM(
+                swaps,
+                order.tif,
+                order.size.toSignedSize(order.side),
+                order.tick,
+                idToStrictCancel
+            );
+        } else {
+            LongShort memory orders = OrdersLib.createOrders(order.side, order.tif, order.size, order.tick);
+            CancelData memory cancelData = OrdersLib.createCancel(idToStrictCancel, true);
+            (matched, takerOtcFee) = _MARKET_HUB.orderAndOtc(
+                order.marketId,
+                user,
+                orders,
+                cancelData,
+                new OTCTrade[](0)
+            );
+        }
+
+        matched.requireDesiredSideAndRate(order.side, desiredMatchRate);
+    }
 
     // * Auto split the amount into book & AMM, and perform the swap accordingly
     function _splitAndSwapBookAMM(

@@ -103,10 +103,20 @@ library Err {
     error AuthExpiryInPast();
     error AuthSelectorNotAllowed();
 
+    // ConditionalModule Errors
+    error ConditionalInvalidAgent();
+    error ConditionalInvalidValidator();
+    error ConditionalInvalidParams();
+    error ConditionalActionExecuted();
+    error ConditionalMessageExpired();
+    error ConditionalOrderExpired();
+    error ConditionalOrderNotReduceOnly();
+
     // Executors Errors
     error InsufficientProfit();
     error ProfitMismatch();
     error LiquidationAMMNotAllowed();
+    error ZeroArbitrageSize();
 
     // Risk Bots Errors
     error CLOInvalidThreshold();
