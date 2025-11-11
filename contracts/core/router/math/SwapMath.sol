@@ -63,7 +63,11 @@ library SwapMathLib {
             });
     }
 
-    // @notice return the size in userSide
+    /// @notice Swaps as much as possible with AMM as long as its implied rate
+    /// is better than the fee-adjusted rate corresponding to bookTick,
+    /// pushing AMM rate to (but not necessary ending up at) that adjusted rate.
+    /// Returns 0 when AMM is not swappable (e.g. after cutoff, AMM is withdraw-only).
+    /// @dev See docs for IAMM.calcSwapSize
     function calcSwapAMMToBookTick(
         SwapMathParams memory self,
         int16 bookTick

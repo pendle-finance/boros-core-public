@@ -56,7 +56,7 @@ abstract contract BaseAMM is IAMM, BOROS20, PendleRolesPlugin {
     }
 
     modifier notWithdrawOnly() {
-        require(_isSizeInSync(), Err.AMMWithdrawOnly());
+        require(!_isWithdrawOnly(), Err.AMMWithdrawOnly());
         _;
     }
 
@@ -141,11 +141,12 @@ abstract contract BaseAMM is IAMM, BOROS20, PendleRolesPlugin {
         return _readState();
     }
 
-    function swapView(int256 sizeOut) external view returns (int256 costOut) {
+    function swapView(int256 sizeOut) external view notWithdrawOnly returns (int256 costOut) {
         (costOut, ) = _applyFee(sizeOut, _swapView(sizeOut));
     }
 
     function calcSwapSize(int256 targetRate) external view returns (int256) {
+        if (_isWithdrawOnly()) return 0;
         return _calcSwapSize(targetRate);
     }
 
@@ -190,8 +191,8 @@ abstract contract BaseAMM is IAMM, BOROS20, PendleRolesPlugin {
 
     // --- internal functions --
 
-    function _isSizeInSync() internal view returns (bool) {
-        return IMarket(MARKET).getDelevLiqNonce(SELF_ACC) == 0;
+    function _isWithdrawOnly() internal view returns (bool) {
+        return IMarket(MARKET).getDelevLiqNonce(SELF_ACC) != 0;
     }
 
     function _applyFee(int256 sizeOut, int256 costOut) internal view returns (int256 newCost, uint256 fee) {

@@ -45,6 +45,9 @@ interface IAMM is IBOROS20 {
 
     function swapView(int256 sizeOut) external view returns (int256 costOut);
 
+    /// @notice Returns largest swappable size to push implied rate towards `targetRate`.
+    /// After swap, implied rate may not be equal to `targetRate` (e.g. hit min/max rate).
+    /// Returns 0 when AMM is not swappable (e.g. after cutoff, AMM is withdraw-only).
     function calcSwapSize(int256 targetRate) external view returns (int256);
 
     function impliedRate() external view returns (int256);

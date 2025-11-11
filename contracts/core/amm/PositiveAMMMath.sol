@@ -37,6 +37,8 @@ library PositiveAMMMath {
     using PMath for int256;
     using LogExpMath for uint256;
 
+    uint256 internal constant RATE_EPS = 10;
+
     function calcSeedOutput(
         AMMSeedParams memory params,
         uint256 maturity,
@@ -167,6 +169,11 @@ library PositiveAMMMath {
     }
 
     function calcSwapSize(AMMState memory state, int256 targetRateInt) internal pure returns (int256 swapSize) {
+        int256 currentRate = calcImpliedRate(state.totalFloatAmount, state.normFixedAmount);
+        if ((targetRateInt - currentRate).abs() < RATE_EPS || isCutOffReached(state)) {
+            return 0;
+        }
+
         uint256 targetRate = clampRate(state, targetRateInt).Uint();
         uint256 normalizedTime = calcNormalizedTime(state);
         uint256 normalizedTimePlusOne = normalizedTime + PMath.ONE;
@@ -196,8 +203,12 @@ library PositiveAMMMath {
     }
 
     function calcNormalizedTime(AMMState memory state) internal pure returns (uint256) {
-        require(state.latestFTime < state.cutOffTimestamp, Err.AMMCutOffReached());
+        require(!isCutOffReached(state), Err.AMMCutOffReached());
         return (state.maturity - state.latestFTime).divDown(state.maturity - state.seedTime);
+    }
+
+    function isCutOffReached(AMMState memory state) internal pure returns (bool) {
+        return state.latestFTime >= state.cutOffTimestamp;
     }
 
     function _snapSmallSizeTo0(int256 size) internal pure returns (int256) {
