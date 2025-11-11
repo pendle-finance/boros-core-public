@@ -9,6 +9,10 @@
         "marketHubRiskManagement": "0xA386c1e2d3FeF88Db7df37C4fAaD2Dc8BF53687f"
     },
     "ammFactory": "0x3205e972714B52512c837AE6f5FCFDeB07f0f23C",
+    "ammCreationCode": {
+        "positiveAMM": "0xD690Cb9CcbB42228C53C4D8f67D2cBDd652F5FdF",
+        "negativeAMM": "0x6220e1752744b05de01D05602701627Ca9302afd"
+    },
     "marketFactory": "0x3080808080Ee6a795c1a6Ff388195Aa5F11ECeE0",
     "marketImplementation": {
         "marketEntry": "0x1E4157d8ac575F2215b44F699e3BC8944f7f63C0",
@@ -20,7 +24,8 @@
     "routerModules": {
         "ammModule": "0x8C8436f76618be610a2e9B630B7687f13714E2d3",
         "authModule": "0xEf97C20dEd1654A02b9AD5005Ffc9ca1acE1232f",
+        "conditionalModule": "0xfE4bfbaB3F0d7f703ad6fdBA56c4EF3559c42688",
         "miscModule": "0x66bBFda304b462AcC436a645aE8ECE2087Ba5B31",
-        "tradeModule": "0xB828fE79213Aff70831aaFEba0d17418CB8d6EeA"
+        "tradeModule": "0x21BFd0F5502D8843d099F89D7424AceEFAF6AD3f"
     }
 }
