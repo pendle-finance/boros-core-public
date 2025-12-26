@@ -23,9 +23,16 @@
     "router": "0x8080808080daB95eFED788a9214e400ba552DEf6",
     "routerModules": {
         "ammModule": "0x8C8436f76618be610a2e9B630B7687f13714E2d3",
-        "authModule": "0xEf97C20dEd1654A02b9AD5005Ffc9ca1acE1232f",
+        "authModule": "0x9c2AbA7dC0FdaA6101dB31d57cAC470931122Bf8",
         "conditionalModule": "0xfE4bfbaB3F0d7f703ad6fdBA56c4EF3559c42688",
+        "depositModule": "0x17a22Bdb5c28fFf7F10e7be3C35CD82d6a882Cd3",
         "miscModule": "0x66bBFda304b462AcC436a645aE8ECE2087Ba5B31",
         "tradeModule": "0x21BFd0F5502D8843d099F89D7424AceEFAF6AD3f"
-    }
+    },
+    "beaconProxyCodeContract": "0xdB539dae50349f15423aAdbF796E5B280C3b1abb",
+    "depositBoxImpl": "0xd017ebeFCb1732B1a7E7bA281E5F5DB83180368B",
+    "depositBoxBeacon": "0xDEB0BEA8882Baf5adb3B24b55D80e5610206C99D",
+    "depositBoxFactoryImpl": "0x2Fde10F911B4bcA9e7Dd5302845A3c023cf04F24",
+    "depositBoxFactory": "0xDEB0FAC888C33E3E7394c095FE3c4E3de760E12c",
+    "swapExecutor": "0xd8d82d566F251E0280F3B5C91c58C8A7bB7A1780"
 }
