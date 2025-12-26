@@ -109,6 +109,8 @@ library SDKErrorsDirectory {
     error AuthAgentExpired();
     error AuthInvalidNonce();
     error AuthExpiryInPast();
+    error AuthIntentExecuted();
+    error AuthIntentExpired();
     error AuthSelectorNotAllowed();
 
     // ConditionalModule Errors
@@ -119,6 +121,13 @@ library SDKErrorsDirectory {
     error ConditionalMessageExpired();
     error ConditionalOrderExpired();
     error ConditionalOrderNotReduceOnly();
+
+    // DepositModule Errors
+    error InsufficientDepositAmount();
+
+    // CrossChainPortal Errors
+    error PortalMessengerNotSet();
+    error PortalInvalidMessenger();
 
     // Executors Errors
     error InsufficientProfit();

@@ -10,6 +10,7 @@ abstract contract AuthStorage {
         mapping(address agent => uint64 nonce) signerNonce;
         mapping(Account account => address) accManager;
         mapping(address relayer => bool) allowedRelayer;
+        mapping(bytes32 intentHash => bool) isIntentExecuted;
     }
 
     function _AMS() internal pure returns (AuthModuleStorage storage $) {

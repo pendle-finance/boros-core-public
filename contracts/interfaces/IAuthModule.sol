@@ -38,5 +38,7 @@ interface IAuthModule is IRouterEventsAndTypes {
 
     function signerNonce(address signer) external view returns (uint64);
 
+    function isIntentExecuted(bytes32 intentHash) external view returns (bool);
+
     function accountManager(Account acc) external view returns (address);
 }

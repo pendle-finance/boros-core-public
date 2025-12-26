@@ -90,6 +90,20 @@ interface IRouterEventsAndTypes {
         int256 netSizeInterm
     );
 
+    event DepositFromBox(
+        address indexed root,
+        uint32 boxId,
+        address tokenSpent,
+        uint256 amountSpent,
+        uint8 accountId,
+        TokenId tokenId,
+        MarketId marketId,
+        uint256 depositAmount,
+        uint256 payTreasuryAmount
+    );
+
+    event WithdrawFromBox(address indexed root, uint32 boxId, address token, uint256 amount);
+
     // ---- messages signed by root ----
 
     struct VaultDepositMessage {
@@ -138,6 +152,35 @@ interface IRouterEventsAndTypes {
         uint64 nonce;
     }
 
+    struct DepositFromBoxMessage {
+        address root;
+        uint32 boxId;
+        address tokenSpent;
+        uint256 maxAmountSpent;
+        //
+        uint8 accountId;
+        TokenId tokenId;
+        MarketId marketId;
+        uint256 minDepositAmount;
+        uint256 payTreasuryAmount;
+        //
+        address swapExtRouter;
+        address swapApprove;
+        bytes swapCalldata;
+        //
+        uint64 expiry;
+        uint256 salt;
+    }
+
+    struct WithdrawFromBoxMessage {
+        address root;
+        uint32 boxId;
+        address token;
+        uint256 amount;
+        //
+        uint64 expiry;
+        uint256 salt;
+    }
     // ---- messages signed by accManager ----
 
     struct ApproveAgentMessage {
