@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {EIP712Essential} from "./EIP712.sol";
 import {IRouterEventsAndTypes} from "./../../../interfaces/IRouterEventsAndTypes.sol";
+import {MarketId, TokenId} from "./../../../types/MarketTypes.sol";
 
 abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
     // prettier-ignore
@@ -112,6 +113,42 @@ abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
             "bytes32 orderHash,"
             "bytes execParams,"
             "uint64 expiry"
+        ")"
+    );
+
+    // prettier-ignore
+    bytes32 internal constant _DEPOSIT_FROM_BOX_MESSAGE = keccak256(
+        "DepositFromBoxMessage("
+            "address root,"
+            "uint32 boxId,"
+            "address tokenSpent,"
+            "uint256 maxAmountSpent,"
+            //
+            "uint8 accountId,"
+            "uint16 tokenId,"
+            "uint24 marketId,"
+            "uint256 minDepositAmount,"
+            "uint256 payTreasuryAmount,"
+            //
+            "address swapExtRouter,"
+            "address swapApprove,"
+            "bytes swapCalldata,"
+            //
+            "uint64 expiry,"
+            "uint256 salt"
+        ")"
+    );
+
+    // prettier-ignore
+    bytes32 internal constant _WITHDRAW_FROM_BOX_MESSAGE = keccak256(
+        "WithdrawFromBoxMessage("
+            "address root,"
+            "uint32 boxId,"
+            "address token,"
+            "uint256 amount,"
+            //
+            "uint64 expiry,"
+            "uint256 salt"
         ")"
     );
 
@@ -261,6 +298,61 @@ abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
                         message.orderHash,
                         keccak256(message.execParams),
                         message.expiry
+                    )
+                )
+            );
+    }
+
+    // DepositFromBoxMessage without swapCalldata/expiry/salt, only containing fixed-size fields
+    struct StaticDepositFromBoxMessage {
+        address root;
+        uint32 boxId;
+        address tokenSpent;
+        uint256 maxAmountSpent;
+        //
+        uint8 accountId;
+        TokenId tokenId;
+        MarketId marketId;
+        uint256 minDepositAmount;
+        uint256 payTreasuryAmount;
+        //
+        address swapExtRouter;
+        address swapApprove;
+    }
+
+    function _hashDepositFromBoxMessage(DepositFromBoxMessage memory message) internal view returns (bytes32) {
+        StaticDepositFromBoxMessage memory staticMessage;
+        assembly ("memory-safe") {
+            staticMessage := message
+        }
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        _DEPOSIT_FROM_BOX_MESSAGE,
+                        staticMessage,
+                        keccak256(message.swapCalldata),
+                        //
+                        message.expiry,
+                        message.salt
+                    )
+                )
+            );
+    }
+
+    function _hashWithdrawFromBoxMessage(WithdrawFromBoxMessage memory message) internal view returns (bytes32) {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        _WITHDRAW_FROM_BOX_MESSAGE,
+                        message.root,
+                        message.boxId,
+                        message.token,
+                        message.amount,
+                        //
+                        message.expiry,
+                        message.salt
                     )
                 )
             );

@@ -236,6 +236,10 @@ contract AuthModule is IAuthModule, AuthBase, RouterAccountBase, PendleRolesPlug
         return _AMS().signerNonce[signer];
     }
 
+    function isIntentExecuted(bytes32 intentHash) external view returns (bool) {
+        return _AMS().isIntentExecuted[intentHash];
+    }
+
     function accountManager(Account acc) public view returns (address) {
         address accManager = _AMS().accManager[acc];
         if (accManager == address(0)) {

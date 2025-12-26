@@ -13,6 +13,17 @@ abstract contract AuthBase is AuthStorage, SigningBase {
         _;
     }
 
+    function _verifyIntentSigAndMarkExecuted(
+        address signer,
+        uint64 expiry,
+        bytes32 intentHash,
+        bytes memory signature
+    ) internal {
+        require(SignatureChecker.isValidSignatureNow(signer, intentHash, signature), Err.AuthInvalidMessage());
+        require(expiry > block.timestamp, Err.AuthIntentExpired());
+        _markIntentExecuted(intentHash);
+    }
+
     function _verifySignerSigAndIncreaseNonce(
         address signer,
         uint64 nonce,
@@ -51,5 +62,10 @@ abstract contract AuthBase is AuthStorage, SigningBase {
     function _verifyAndIncreaseNonce(address signer, uint64 nonce) internal {
         require(_AMS().signerNonce[signer] < nonce, Err.AuthInvalidNonce());
         _AMS().signerNonce[signer] = nonce;
+    }
+
+    function _markIntentExecuted(bytes32 intentHash) internal {
+        require(!_AMS().isIntentExecuted[intentHash], Err.AuthIntentExecuted());
+        _AMS().isIntentExecuted[intentHash] = true;
     }
 }
