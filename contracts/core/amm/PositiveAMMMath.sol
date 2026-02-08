@@ -169,12 +169,14 @@ library PositiveAMMMath {
     }
 
     function calcSwapSize(AMMState memory state, int256 targetRateInt) internal pure returns (int256 swapSize) {
+        targetRateInt = clampRate(state, targetRateInt);
+
         int256 currentRate = calcImpliedRate(state.totalFloatAmount, state.normFixedAmount);
         if ((targetRateInt - currentRate).abs() < RATE_EPS || isCutOffReached(state)) {
             return 0;
         }
 
-        uint256 targetRate = clampRate(state, targetRateInt).Uint();
+        uint256 targetRate = targetRateInt.Uint();
         uint256 normalizedTime = calcNormalizedTime(state);
         uint256 normalizedTimePlusOne = normalizedTime + PMath.ONE;
         uint256 liquidityMul1E18 = state.totalFloatAmount.pow(normalizedTime) * state.normFixedAmount;
