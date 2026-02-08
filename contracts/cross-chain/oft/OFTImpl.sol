@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.28;
+
+import {OFT} from "@layerzerolabs/oft-evm/contracts/OFT.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+contract OFTImpl is OFT {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        address _lzEndpoint,
+        address _delegate,
+        address _initialOwner
+    ) OFT(_name, _symbol, _lzEndpoint, _delegate) Ownable(_initialOwner) {}
+}
