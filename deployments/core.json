@@ -34,5 +34,10 @@
     "depositBoxBeacon": "0xDEB0BEA8882Baf5adb3B24b55D80e5610206C99D",
     "depositBoxFactoryImpl": "0x2Fde10F911B4bcA9e7Dd5302845A3c023cf04F24",
     "depositBoxFactory": "0xDEB0FAC888C33E3E7394c095FE3c4E3de760E12c",
-    "swapExecutor": "0xd8d82d566F251E0280F3B5C91c58C8A7bB7A1780"
+    "swapExecutor": "0xd8d82d566F251E0280F3B5C91c58C8A7bB7A1780",
+    "distributor": {
+        "makerIncentive": "0xD0808080803c59dBF8825290bca8979786C2d65B",
+        "ammIncentive": "0xD180808080402FE41711Db560B8db5C41e21Df71",
+        "referralIncentive": "0xD2808080809a71248620a7ddc25b721d3DBe1058"
+    }
 }
