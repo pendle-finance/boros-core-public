@@ -25,7 +25,7 @@ contract AMMFactory is IAMMFactory, PendleRolesPlugin {
         bool isPositive,
         AMMCreateParams memory createParams,
         AMMSeedParams memory seedParams
-    ) external returns (address newAMM) {
+    ) external onlyAuthorized returns (address newAMM) {
         AMMState memory initialState;
 
         address market = createParams.market;
