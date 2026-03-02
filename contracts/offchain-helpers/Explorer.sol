@@ -12,13 +12,12 @@ import {TickMath} from "./../lib/math/TickMath.sol";
 import {MarketAcc} from "./../types/Account.sol";
 import {AMMId, GetRequest, MarginType, MarketId, MarketIdLib, TokenId} from "./../types/MarketTypes.sol";
 import {OrderId, OrderIdLib, Side, TimeInForce} from "./../types/Order.sol";
-import {PendleRolesPlugin} from "./../core/roles/PendleRoles.sol";
 import {Trade} from "./../types/Trade.sol";
 import {IMiscModule} from "./../interfaces/IMiscModule.sol";
 import {IRouter} from "./../interfaces/IRouter.sol";
 import {CreateCompute} from "./../types/createCompute.sol";
 
-contract Explorer is IExplorer, PendleRolesPlugin {
+contract Explorer is IExplorer {
     using PMath for int256;
     using PMath for uint32;
     using PMath for uint256;
@@ -27,12 +26,7 @@ contract Explorer is IExplorer, PendleRolesPlugin {
     address public immutable MARKET_HUB;
     address public immutable ROUTER;
 
-    constructor(
-        address permissionController_,
-        address marketFactory_,
-        address marketHub_,
-        address router_
-    ) PendleRolesPlugin(permissionController_) {
+    constructor(address marketFactory_, address marketHub_, address router_) {
         MARKET_FACTORY = marketFactory_;
         MARKET_HUB = marketHub_;
         ROUTER = router_;
@@ -93,6 +87,65 @@ contract Explorer is IExplorer, PendleRolesPlugin {
 
         for (uint256 i = 0; i < marketIds.length; i++) {
             PositionInfo memory position = userInfo.positions[i];
+            int256 signedSize = position.signedSize;
+            if (signedSize == 0) continue;
+
+            IMarketOff market = IMarketOff(marketIdToAddress(marketIds[i]));
+            try
+                Explorer(address(this)).calcLiquidationRate(
+                    market,
+                    user,
+                    signedSize,
+                    (totalValue - position.positionValue) - (totalMaintMargin - position.maintMargin).Int()
+                )
+            returns (int256 liquidationApr) {
+                position.liquidationApr = liquidationApr;
+            } catch {
+                position.liquidationApr = 0;
+            }
+        }
+    }
+
+    function getUserInfoV2(MarketAcc user) external returns (UserInfoV2 memory userInfo) {
+        _settleAll(user);
+
+        MarketId[] memory marketIds = IMarketHub(MARKET_HUB).getEnteredMarkets(user);
+
+        userInfo.totalCash = IMarketHub(MARKET_HUB).accCash(user);
+        userInfo.positions = new PositionInfoV2[](marketIds.length);
+
+        int256 totalValue = userInfo.totalCash;
+        uint256 totalInitialMargin = 0;
+        uint256 totalMaintMargin = 0;
+
+        for (uint256 i = 0; i < marketIds.length; i++) {
+            IMarketOff market = IMarketOff(marketIdToAddress(marketIds[i]));
+
+            int256 signedSize = market.getSignedSizeNoSettle(user);
+            int256 positionValue = market.calcPositionValueNoSettle(user);
+            uint256 initialMargin = market.calcMarginNoSettle(user, MarginType.IM);
+            uint256 maintMargin = market.calcMarginNoSettle(user, MarginType.MM);
+
+            userInfo.positions[i] = PositionInfoV2({
+                marketId: marketIds[i],
+                latestFTime: market.getLatestFTime(),
+                signedSize: signedSize,
+                positionValue: positionValue,
+                liquidationApr: 0, // calculated below
+                initialMargin: initialMargin,
+                maintMargin: maintMargin,
+                orders: market.getAllOpenOrders(user)
+            });
+
+            totalValue += positionValue;
+            totalInitialMargin += initialMargin;
+            totalMaintMargin += maintMargin;
+        }
+        userInfo.availableInitialMargin = totalValue - totalInitialMargin.Int();
+        userInfo.availableMaintMargin = totalValue - totalMaintMargin.Int();
+
+        for (uint256 i = 0; i < marketIds.length; i++) {
+            PositionInfoV2 memory position = userInfo.positions[i];
             int256 signedSize = position.signedSize;
             if (signedSize == 0) continue;
 

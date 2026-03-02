@@ -25,6 +25,24 @@ interface IExplorer {
         int256 availableMaintMargin;
     }
 
+    struct PositionInfoV2 {
+        MarketId marketId;
+        uint32 latestFTime;
+        int256 signedSize;
+        int256 positionValue;
+        int256 liquidationApr;
+        uint256 initialMargin;
+        uint256 maintMargin;
+        IMarketOff.Order[] orders;
+    }
+
+    struct UserInfoV2 {
+        int256 totalCash;
+        PositionInfoV2[] positions;
+        int256 availableInitialMargin;
+        int256 availableMaintMargin;
+    }
+
     struct MarketInfo {
         string name;
         string symbol;
@@ -46,6 +64,8 @@ interface IExplorer {
     function ROUTER() external view returns (address);
 
     function getUserInfo(MarketAcc user) external returns (UserInfo memory userInfo);
+
+    function getUserInfoV2(MarketAcc user) external returns (UserInfoV2 memory userInfo);
 
     function getUserInfoAfterPlaceOrder(
         MarketAcc user,
