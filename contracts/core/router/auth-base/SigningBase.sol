@@ -152,6 +152,45 @@ abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
         ")"
     );
 
+    // prettier-ignore
+    bytes32 internal constant _OTC_TRADE_REQ = keccak256(
+        "OTCTradeReq("
+            "uint24 marketId,"
+            "int128 signedSize,"
+            "int128 rate,"
+            "address maker,"
+            "address taker,"
+            "uint256 salt"
+        ")"
+    );
+
+    // prettier-ignore
+    bytes32 internal constant _ACCEPT_OTC_FULL_MESSAGE = keccak256(
+        "AcceptOTCFullMessage("
+            "OTCTradeReq trade,"
+            "uint8 accountId,"
+            "bool cross,"
+            "uint64 expiry"
+        ")"
+        "OTCTradeReq("
+            "uint24 marketId,"
+            "int128 signedSize,"
+            "int128 rate,"
+            "address maker,"
+            "address taker,"
+            "uint256 salt"
+        ")"
+    );
+
+    // prettier-ignore
+    bytes32 internal constant _EXECUTE_OTC_TRADE_MESSAGE = keccak256(
+        "ExecuteOTCTradeMessage("
+            "bytes32 makerMsgHash,"
+            "bytes32 takerMsgHash,"
+            "uint64 expiry"
+        ")"
+    );
+
     function _hashVaultDepositMessage(VaultDepositMessage memory message) internal view returns (bytes32) {
         return
             _hashTypedDataV4(
@@ -354,6 +393,37 @@ abstract contract SigningBase is IRouterEventsAndTypes, EIP712Essential {
                         message.expiry,
                         message.salt
                     )
+                )
+            );
+    }
+
+    function _hashOTCTradeReq(OTCTradeReq memory req) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(_OTC_TRADE_REQ, req.marketId, req.signedSize, req.rate, req.maker, req.taker, req.salt)
+            );
+    }
+
+    function _hashAcceptOTCFullMessage(AcceptOTCFullMessage memory message) internal view returns (bytes32) {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        _ACCEPT_OTC_FULL_MESSAGE,
+                        _hashOTCTradeReq(message.trade),
+                        message.accountId,
+                        message.cross,
+                        message.expiry
+                    )
+                )
+            );
+    }
+
+    function _hashExecuteOTCTradeMessage(ExecuteOTCTradeMessage memory message) internal view returns (bytes32) {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(_EXECUTE_OTC_TRADE_MESSAGE, message.makerMsgHash, message.takerMsgHash, message.expiry)
                 )
             );
     }

@@ -22,6 +22,9 @@ library GeneratedStorageSlots {
     // keccak256(abi.encode(uint256(keccak256("pendle.router.conditionalModuleStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 internal constant ROUTER_CONDITIONAL_MODULE_STORAGE_LOCATION = 0xda57e91253d607e7578e3ce3c97f6418b759566a2b7382aaf0878c3a700b2e00;
 
+    // keccak256(abi.encode(uint256(keccak256("pendle.router.otcModuleStorage")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 internal constant ROUTER_OTC_MODULE_STORAGE_LOCATION = 0xf889de68e6b3977d2d6980342cbaf54c170cabea34ad9604f81388233d9c3000;
+
     // keccak256(abi.encode(uint256(keccak256("pendle.market.accState")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 internal constant MARKET_ACC_STATE_LOCATION = 0xa6e5e42b42c0024b0c678b45c25c63bafc334535ded980ac44f290e897708300;
 

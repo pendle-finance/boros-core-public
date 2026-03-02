@@ -40,6 +40,14 @@ interface IRouterEventsAndTypes {
         uint256 takerOtcFee
     );
 
+    event OTCTradeExecuted(
+        MarketAcc indexed maker,
+        MarketAcc indexed taker,
+        MarketId indexed marketId,
+        Trade trade,
+        uint256 otcFee
+    );
+
     event SwapWithAmm(
         MarketAcc indexed user,
         MarketId indexed marketId,
@@ -180,6 +188,22 @@ interface IRouterEventsAndTypes {
         //
         uint64 expiry;
         uint256 salt;
+    }
+
+    struct OTCTradeReq {
+        MarketId marketId;
+        int128 signedSize;
+        int128 rate;
+        address maker;
+        address taker;
+        uint256 salt;
+    }
+
+    struct AcceptOTCFullMessage {
+        OTCTradeReq trade;
+        uint8 accountId;
+        bool cross;
+        uint64 expiry;
     }
     // ---- messages signed by accManager ----
 
@@ -357,6 +381,31 @@ interface IRouterEventsAndTypes {
         bytes placeSig;
         //
         address validator;
+        uint64 execMsgExpiry;
+        bytes execSig;
+    }
+
+    struct ExecuteOTCTradeMessage {
+        bytes32 makerMsgHash;
+        bytes32 takerMsgHash;
+        uint64 expiry;
+    }
+
+    struct AcceptOTCPartialData {
+        // to be combined with OTCTradeReq for final message
+        uint8 accountId;
+        bool cross;
+        uint64 expiry;
+        address agent;
+        bytes signature;
+    }
+
+    struct ExecuteOTCTradeReq {
+        OTCTradeReq trade;
+        //
+        AcceptOTCPartialData makerData;
+        AcceptOTCPartialData takerData;
+        //
         uint64 execMsgExpiry;
         bytes execSig;
     }

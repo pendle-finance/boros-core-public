@@ -125,6 +125,11 @@ library SDKErrorsDirectory {
     // DepositModule Errors
     error InsufficientDepositAmount();
 
+    // OTCModule Errors
+    error OTCInvalidAgent();
+    error OTCMessageExpired();
+    error OTCRequestExecuted();
+
     // CrossChainPortal Errors
     error PortalMessengerNotSet();
     error PortalInvalidMessenger();

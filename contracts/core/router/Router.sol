@@ -13,6 +13,7 @@ contract Router is Proxy {
     address internal immutable _CONDITIONAL_MODULE;
     address internal immutable _DEPOSIT_MODULE;
     address internal immutable _MISC_MODULE;
+    address internal immutable _OTC_MODULE;
     address internal immutable _TRADE_MODULE;
 
     constructor(
@@ -21,6 +22,7 @@ contract Router is Proxy {
         address conditionalModule_,
         address depositModule_,
         address miscModule_,
+        address otcModule_,
         address tradeModule_
     ) {
         _AMM_MODULE = ammModule_;
@@ -28,6 +30,7 @@ contract Router is Proxy {
         _CONDITIONAL_MODULE = conditionalModule_;
         _DEPOSIT_MODULE = depositModule_;
         _MISC_MODULE = miscModule_;
+        _OTC_MODULE = otcModule_;
         _TRADE_MODULE = tradeModule_;
     }
 
@@ -40,6 +43,7 @@ contract Router is Proxy {
                 conditionalModule: _CONDITIONAL_MODULE,
                 depositModule: _DEPOSIT_MODULE,
                 miscModule: _MISC_MODULE,
+                otcModule: _OTC_MODULE,
                 tradeModule: _TRADE_MODULE
             });
     }
