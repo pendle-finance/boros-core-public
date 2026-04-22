@@ -50,9 +50,9 @@ contract MiscModule is RouterAccountBase, AuthStorage, TradeStorage, PendleRoles
             if (result.success) {
                 emit TryAggregateCallSucceeded(i);
             } else {
+                if (requireSuccess) _revertBytes(result.returnData);
                 emit TryAggregateCallFailed(i, bytes4(result.returnData));
             }
-            if (requireSuccess) require(result.success, "Multicall3: call failed");
         }
     }
 
